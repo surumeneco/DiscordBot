@@ -1,10 +1,10 @@
-const fs = require("node:fs");
 const npath = require("node:path");
+const reader = require("../functions/general/read_directory");
 
 const load_commands = async (path, client) => {
-  const commandsPath = npath.join(__dirname, path);
-  const commandFiles = fs
-    .readdirSync(commandsPath)
+  const commandsPath = npath.resolve("");
+  const commandFiles = reader
+    .readSubDirSync(path)
     .filter((file) => file.endsWith(".js"));
 
   for (const file of commandFiles) {

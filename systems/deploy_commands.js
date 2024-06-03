@@ -1,16 +1,18 @@
 const { REST, Routes } = require("discord.js");
-const fs = require("node:fs");
+const reader = require("../functions/general/read_directory");
 
 const deploy_commands = async (path, client) => {
   // commandsフォルダからjsで終わるファイルを取得
   const commands = [];
-  const commandFiles = fs
-    .readdirSync(path)
+  const commandFiles = reader
+    .readSubDirSync(path)
     .filter((file) => file.endsWith(".js"));
 
+  // 取得したファイルの中身を読込
+  const path_text = path.split("/")[0];
   for (const file of commandFiles) {
-    console.log(`.${path}/${file}`);
-    const command = require(`.${path}/${file}`);
+    console.log(`.${path_text}/${file}`);
+    const command = require(`.${path_text}/${file}`);
     commands.push(command.data.toJSON());
   }
 
@@ -38,6 +40,11 @@ const deploy_commands = async (path, client) => {
     // And of course, make sure you catch and log any errors!
     console.error(error);
   }
+};
+
+const load_files = (path) => {
+  const result = [];
+  return result;
 };
 
 module.exports = {

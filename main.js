@@ -17,10 +17,11 @@ client.once("ready", async () => {
   // コマンドを読込
   client.commands = new Collection();
   await require("./systems/load_commands.js").load_commands(
-    "../commands",
+    "./commands",
     client
   );
 
+  client.user.setActivity("ファイルナ・ファタンジー");
   console.log(`SYSTEM: Logged in as ${client.user.tag}`);
 });
 
