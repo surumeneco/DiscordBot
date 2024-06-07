@@ -69,6 +69,45 @@ const execute = async (interaction) => {
     ]);
   }
 
+  text += "\n" + "**現在のカード：" + ":" + old_card.suit + ":";
+  switch (old_card.number) {
+    case 1:
+      text += "A";
+      break;
+    case 11:
+      text += "J";
+      break;
+    case 12:
+      text += "Q";
+      break;
+    case 13:
+      text += "K";
+      break;
+    default:
+      text += old_card.number;
+      break;
+  }
+  text += "**";
+  text += "\n" + "**引いたカード：" + ":" + now_card.suit + ":";
+  switch (now_card.number) {
+    case 1:
+      text += "A";
+      break;
+    case 11:
+      text += "J";
+      break;
+    case 12:
+      text += "Q";
+      break;
+    case 13:
+      text += "K";
+      break;
+    default:
+      text += now_card.number;
+      break;
+  }
+  text += "**";
+
   // メッセージを生成
   if (result) {
     text += "\n" + "成功！";

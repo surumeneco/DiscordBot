@@ -51,7 +51,7 @@ const execute = async (interaction) => {
   // 結果を判定
   const now_card = deck.pop();
   const result = old_card.number <= now_card.number;
-  const odds = result ? odds_high[old_card.numbe - 1] : 0;
+  const odds = result ? odds_high[old_card.number - 1] : 0;
   const next_coins = Math.round(bet_coins * odds);
   if (result) {
     await execute_query(
@@ -77,6 +77,45 @@ const execute = async (interaction) => {
     text += "\n" + "残念～。";
     text += "\n" + "また遊んでね。";
   }
+
+  text += "\n" + "**現在のカード：" + ":" + old_card.suit + ":";
+  switch (old_card.number) {
+    case 1:
+      text += "A";
+      break;
+    case 11:
+      text += "J";
+      break;
+    case 12:
+      text += "Q";
+      break;
+    case 13:
+      text += "K";
+      break;
+    default:
+      text += old_card.number;
+      break;
+  }
+  text += "**";
+  text += "\n" + "**引いたカード：" + ":" + now_card.suit + ":";
+  switch (now_card.number) {
+    case 1:
+      text += "A";
+      break;
+    case 11:
+      text += "J";
+      break;
+    case 12:
+      text += "Q";
+      break;
+    case 13:
+      text += "K";
+      break;
+    default:
+      text += now_card.number;
+      break;
+  }
+  text += "**";
 
   text += "\n" + "**ベットしたコイン：" + bet_coins + "枚**";
   text +=
