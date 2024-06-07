@@ -7,7 +7,7 @@ class trump_card {
   }
 }
 
-const suits = ["spade", "heart", "diamond", "club"];
+const suits = ["spades", "hearts", "diamonds", "clubs"];
 
 const new_trump_deck = () => {
   const deck = new Array();
@@ -21,14 +21,26 @@ const new_trump_deck = () => {
 
 const shuffle_trumps = (deck) => {
   if (!Array.isArray(deck)) {
-    return [];
+    return null;
   }
   const shuffled = new Array();
   const deck_num = deck.length;
-  for (let i = 0; i > deck_num; i++) {
+  for (let i = 0; i < deck_num; i++) {
     shuffled.push(deck.splice(Math.floor(Math.random() * deck.length), 1)[0]);
   }
   return shuffled;
+};
+
+const load_card = (json_object) => {
+  return new trump_card(json_object.suit, json_object.number);
+};
+
+const load_deck = (json_object) => {
+  const deck = new Array();
+  json_object.forEach((element) => {
+    deck.push(new trump_card(element.suit, element.number));
+  });
+  return deck;
 };
 
 module.exports = {
@@ -36,4 +48,6 @@ module.exports = {
   suits,
   new_trump_deck,
   shuffle_trumps,
+  load_card,
+  load_deck,
 };
