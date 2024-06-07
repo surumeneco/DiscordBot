@@ -23,7 +23,7 @@ const command = new SlashCommandBuilder()
       )
   )
   .addNumberOption((option) =>
-    option.setName("bet").setDescription("賭け金").setRequired(true)
+    option.setName("bet").setDescription("ベットするコイン数").setRequired(true)
   );
 
 const casino = async (interaction) => {
