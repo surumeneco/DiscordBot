@@ -51,7 +51,7 @@ const execute = async (interaction) => {
   // 結果を判定
   const now_card = deck.pop();
   const result = old_card.number <= now_card.number;
-  const odds = result ? odds_high[old_card.number] : 0;
+  const odds = result ? odds_high[old_card.number - 1] : 0;
   const next_coins = Math.round(bet_coins * odds);
   if (result) {
     await execute_query(
