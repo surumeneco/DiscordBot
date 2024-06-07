@@ -26,7 +26,7 @@ const get_userdata = async (user_id) => {
   return result;
 };
 
-const execute = async (text, params) => {
+const execute_query = async (text, params) => {
   const query = new Query(text, params);
   const client = await conn_db.connect();
   const result = await conn_db.query(query.text, query.params);
@@ -39,5 +39,5 @@ module.exports = {
   conn_db,
   Query,
   get_userdata,
-  execute,
+  execute_query,
 };

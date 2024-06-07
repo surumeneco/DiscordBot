@@ -1,7 +1,6 @@
 require("dotenv").config();
 const { Client, Collection, GatewayIntentBits } = require("discord.js");
 const cli = require("nodemon/lib/cli/index.js");
-// const { token } = require("./config.json");
 
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
@@ -18,6 +17,10 @@ client.once("ready", async () => {
   client.commands = new Collection();
   await require("./systems/load_commands.js").load_commands(
     "./commands",
+    client
+  );
+  await require("./systems/load_commands.js").load_commands(
+    "./buttons",
     client
   );
 
