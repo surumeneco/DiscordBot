@@ -53,70 +53,77 @@ const execute = async (interaction) => {
   const result = now_card.number <= old_card.number;
   const odds = result ? odds_low[old_card.number - 1] : 0;
   const next_coins = Math.round(bet_coins * odds);
-  if (result) {
-    await execute_query(
-      "update W_HIGHANDLOW set now_card = $1, now_deck = $2, now_bet = $3 where user_id = $4",
-      [
-        JSON.stringify(now_card),
-        JSON.stringify(deck),
+
+  const sequence = result ? (deck.length > 0 ? "win" : "finish") : "lose";
+
+  switch (sequence) {
+    case "win":
+      win(
+        interaction,
+        deck,
+        now_card,
+        old_card,
+        bet_coins,
         next_coins,
-        interaction.user.id,
-      ]
-    );
-  } else {
-    await execute_query("delete from W_HIGHANDLOW where user_id = $1", [
+        odds,
+        now_coins
+      );
+      break;
+    case "finish":
+      finish(
+        interaction,
+        deck,
+        now_card,
+        old_card,
+        bet_coins,
+        next_coins,
+        odds,
+        now_coins
+      );
+      break;
+    case "lose":
+      lose(
+        interaction,
+        deck,
+        now_card,
+        old_card,
+        bet_coins,
+        next_coins,
+        odds,
+        now_coins
+      );
+      break;
+    default:
+      break;
+  }
+};
+
+const win = async (
+  interaction,
+  deck,
+  now_card,
+  old_card,
+  bet_coins,
+  next_coins,
+  odds,
+  now_coins
+) => {
+  let text = "";
+
+  await execute_query(
+    "update W_HIGHANDLOW set now_card = $1, now_deck = $2, now_bet = $3 where user_id = $4",
+    [
+      JSON.stringify(now_card),
+      JSON.stringify(deck),
+      next_coins,
       interaction.user.id,
-    ]);
-  }
+    ]
+  );
 
-  text += "\n" + "**現在のカード：" + ":" + old_card.suit + ":";
-  switch (old_card.number) {
-    case 1:
-      text += "A";
-      break;
-    case 11:
-      text += "J";
-      break;
-    case 12:
-      text += "Q";
-      break;
-    case 13:
-      text += "K";
-      break;
-    default:
-      text += old_card.number;
-      break;
-  }
-  text += "**";
-  text += "\n" + "**引いたカード：" + ":" + now_card.suit + ":";
-  switch (now_card.number) {
-    case 1:
-      text += "A";
-      break;
-    case 11:
-      text += "J";
-      break;
-    case 12:
-      text += "Q";
-      break;
-    case 13:
-      text += "K";
-      break;
-    default:
-      text += now_card.number;
-      break;
-  }
-  text += "**";
-
-  // メッセージを生成
-  if (result) {
-    text += "\n" + "成功！";
-    text += "\n" + "返ってきたコインをそのままベットして続けるかい？";
-  } else {
-    text += "\n" + "残念～。";
-    text += "\n" + "また遊んでね。";
-  }
-
+  text += "\n" + "成功！";
+  text += "\n" + "返ってきたコインをそのままベットして続けるかい？";
+  text += "\n" + "**選択：ロー**";
+  text += card_info(now_card, old_card);
   text += "\n" + "**ベットしたコイン：" + bet_coins + "枚**";
   text +=
     "\n" +
@@ -128,6 +135,7 @@ const execute = async (interaction) => {
     "倍)" +
     "**";
   text += "\n" + "**現在の所持コイン：" + now_coins + "枚**";
+  text += "\n" + "**残りのカード枚数：" + deck.length + "枚**";
 
   // ボタン定義
   const button_continue = new ButtonBuilder()
@@ -139,21 +147,119 @@ const execute = async (interaction) => {
     .setCustomId("btn-casino-hal-stop")
     .setStyle(ButtonStyle.Danger);
 
-  // メッセージを送信
-  if (result) {
-    await interaction.reply({
-      content: text,
-      components: [
-        new ActionRowBuilder().setComponents([button_continue, button_stop]),
-      ],
-      ephemeral: true,
-    });
-  } else {
-    await interaction.reply({
-      content: text,
-      ephemeral: true,
-    });
+  await interaction.reply({
+    content: text,
+    components: [
+      new ActionRowBuilder().setComponents([button_continue, button_stop]),
+    ],
+    ephemeral: true,
+  });
+};
+
+const finish = async (
+  interaction,
+  deck,
+  now_card,
+  old_card,
+  bet_coins,
+  next_coins,
+  odds,
+  now_coins
+) => {
+  let text = "";
+
+  now_coins += next_coins;
+  await execute_query("update M_USER set coins = $1 where user_id = $2", [
+    now_coins,
+    interaction.user.id,
+  ]);
+
+  await execute_query("delete from W_HIGHANDLOW where user_id = $1", [
+    interaction.user.id,
+  ]);
+
+  text += "\n" + "成功！";
+  text += "\n" + "今ので最後の1枚だったよ～！";
+  text += "\n" + "また遊んでね。";
+  text += "\n" + "**選択：ロー**";
+  text += card_info(now_card, old_card);
+  text += "\n" + "**ベットしたコイン：" + bet_coins + "枚**";
+  text +=
+    "\n" +
+    "**手に入れたコイン：" +
+    next_coins +
+    "枚" +
+    " (" +
+    odds +
+    "倍)" +
+    "**";
+  text += "\n" + "**現在の所持コイン：" + now_coins + "枚**";
+  text += "\n" + "**残りのカード枚数：" + deck.length + "枚！**";
+
+  await interaction.reply({
+    content: text,
+    ephemeral: true,
+  });
+};
+
+const lose = async (
+  interaction,
+  deck,
+  now_card,
+  old_card,
+  bet_coins,
+  next_coins,
+  odds,
+  now_coins
+) => {
+  let text = "";
+
+  await execute_query("delete from W_HIGHANDLOW where user_id = $1", [
+    interaction.user.id,
+  ]);
+
+  text += "\n" + "残念～。";
+  text += "\n" + "また遊んでね。";
+  text += "\n" + "**選択：ロー**";
+  text += card_info(now_card, old_card);
+  text += "\n" + "**ベットしたコイン：" + bet_coins + "枚**";
+  text += "\n" + "**現在の所持コイン：" + now_coins + "枚**";
+  text += "\n" + "**残りのカード枚数：" + deck.length + "枚**";
+
+  await interaction.reply({
+    content: text,
+    ephemeral: true,
+  });
+};
+
+const card_info = (now_card, old_card) => {
+  let text = "";
+  text += "\n" + "**現在のカード：" + card_text(old_card) + "**";
+  text += "\n" + "**引いたカード：" + card_text(now_card) + "**";
+  return text;
+};
+
+const card_text = (card) => {
+  let text = "";
+  text += ":" + card.suit + ":";
+  switch (card.number) {
+    case 1:
+      text += "A";
+      break;
+    case 11:
+      text += "J";
+      break;
+    case 12:
+      text += "Q";
+      break;
+    case 13:
+      text += "K";
+      break;
+    default:
+      text += card.number;
+      break;
   }
+  return text;
 };
 
 const odds_low = [
