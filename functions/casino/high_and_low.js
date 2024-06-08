@@ -17,14 +17,6 @@ const high_and_low = async (interaction) => {
     return;
   }
 
-  // ベットできるか確認
-  let now_coins = parseFloat(userdata.rows[0].coins);
-  const bet_coins = interaction.options.get("bet").value;
-  if (now_coins < bet_coins) {
-    not_enough_coins(interaction);
-    return;
-  }
-
   // 既にプレイ中か確認
   const has_data = await execute_query(
     "select * from W_HIGHANDLOW where user_id = $1",
@@ -32,6 +24,14 @@ const high_and_low = async (interaction) => {
   );
   if (has_data.rowCount > 0) {
     await already_playing(interaction, has_data);
+    return;
+  }
+
+  // ベットできるか確認
+  let now_coins = parseFloat(userdata.rows[0].coins);
+  const bet_coins = interaction.options.get("bet").value;
+  if (now_coins < bet_coins) {
+    not_enough_coins(interaction);
     return;
   }
 
@@ -67,7 +67,7 @@ const already_playing = async (interaction, now_play_data) => {
   const button_stop = new ButtonBuilder()
     .setLabel("やめる")
     .setCustomId("btn-casino-hal-stop")
-    .setStyle(ButtonStyle.Danger);
+    .setStyle(ButtonStyle.Secondary);
 
   // メッセージを送信
   await interaction.reply({
