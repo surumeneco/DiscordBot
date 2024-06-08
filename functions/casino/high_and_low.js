@@ -67,7 +67,7 @@ const already_playing = async (interaction, now_play_data) => {
   const button_stop = new ButtonBuilder()
     .setLabel("やめる")
     .setCustomId("btn-casino-hal-stop")
-    .setStyle(ButtonStyle.Danger);
+    .setStyle(ButtonStyle.Secondary);
 
   // メッセージを送信
   await interaction.reply({
