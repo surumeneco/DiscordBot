@@ -26,8 +26,13 @@ const help = async (interaction) => {
   reply_text += "\n" + "未実装だよ";
   reply_text += "\n" + "```";
   reply_text += "\n" + "```";
-  reply_text += "\n" + "・/casino：未実装";
-  reply_text += "\n" + "今後ポーカーとかブラックジャックとかを作るつもりだよ";
+  reply_text += "\n" + "・/casino：コインを使って遊べるよ";
+  reply_text += "\n" + "game:ハイ&ロー";
+  reply_text += "\n" + "ハイ&ローが遊べるよ";
+  reply_text += "\n" + "game:ブラックジャック";
+  reply_text += "\n" + "未実装だよ";
+  reply_text += "\n" + "game:ポーカー";
+  reply_text += "\n" + "未実装だよ";
   reply_text += "\n" + "```";
   reply_text += "\n" + "```";
   reply_text += "\n" + "・/ito：未実装";
