@@ -9,6 +9,9 @@ const {
 
 const login = async (interaction) => {
   let reply_text = "";
+  const user = await interaction.guild.members.fetch(interaction.user.id);
+  const user_name = user ? user.displayName : null;
+  console.log(user_name);
   let now_coins = 0;
   const result = await get_userdata(interaction.user.id);
   if (result.rowCount > 0) {
@@ -27,13 +30,13 @@ const login = async (interaction) => {
       reply_text += "\n今日はもうログインしてるみたいだね～";
     }
     await execute_query(
-      "update M_USER set last_login = $1 where user_id = $2",
-      [format_date(new Date()), interaction.user.id]
+      "update M_USER set user_name = $1, last_login = $2 where user_id = $3",
+      [user_name, format_date(new Date()), interaction.user.id]
     );
   } else {
     await execute_query(
-      "insert into M_USER (user_id, last_login, coins, debts) values ($1, $2, 100, 0)",
-      [interaction.user.id, format_date(new Date())]
+      "insert into M_USER (user_id, user_name, last_login, coins, debts) values ($1, $2, $3, 100, 0)",
+      [interaction.user.id, user_name, format_date(new Date())]
     );
     now_coins = 100;
     reply_text += "\n新規ログインありがとね～";
