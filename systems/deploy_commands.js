@@ -42,11 +42,6 @@ const deploy_commands = async (path, client) => {
   }
 };
 
-const load_files = (path) => {
-  const result = [];
-  return result;
-};
-
 module.exports = {
   deploy_commands,
 };

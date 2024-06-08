@@ -9,9 +9,9 @@ const {
 } = require("discord.js");
 const {
   get_userdata,
-  execute,
+  execute_query,
 } = require("../../functions/general/postgre_db.js");
-const { datetime } = require("../../functions/general/datetime.js");
+const { format_date } = require("../../functions/general/datetime.js");
 
 const command = new SlashCommandBuilder()
   .setName("coins")
@@ -29,7 +29,7 @@ const command = new SlashCommandBuilder()
       )
   );
 
-const coins = async (interaction) => {
+const execute = async (interaction) => {
   switch (interaction.options.get("control").value) {
     case "login":
       await login(interaction);
@@ -54,15 +54,13 @@ const login = async (interaction) => {
   let now_coins = 0;
   const result = await get_userdata(interaction.user.id);
   if (result.rowCount > 0) {
-    await execute("update M_USER set last_login = $1 where user_id = $2", [
-      datetime.format(new Date()),
-      interaction.user.id,
-    ]);
     now_coins = parseFloat(result.rows[0].coins);
 
-    if (result.rows[0].last_login < datetime.format(new Date())) {
+    console.log("last:" + format_date(result.rows[0].last_login));
+    console.log("now:" + format_date(new Date()));
+    if (format_date(result.rows[0].last_login) < format_date(new Date())) {
       now_coins += 10;
-      await execute("update M_USER set coins = $1 where user_id = $2", [
+      await execute_query("update M_USER set coins = $1 where user_id = $2", [
         now_coins,
         interaction.user.id,
       ]);
@@ -71,10 +69,14 @@ const login = async (interaction) => {
     } else {
       reply_text += "\n今日はもうログインしてるみたいだね～";
     }
+    await execute_query(
+      "update M_USER set last_login = $1 where user_id = $2",
+      [format_date(new Date()), interaction.user.id]
+    );
   } else {
-    await execute(
+    await execute_query(
       "insert into M_USER (user_id, last_login, coins, debts) values ($1, $2, 100, 0)",
-      [interaction.user.id, datetime.format(new Date())]
+      [interaction.user.id, format_date(new Date())]
     );
     now_coins = 100;
     reply_text += "\n新規ログインありがとね～";
@@ -89,7 +91,8 @@ const info = async (interaction) => {
   if (result.rowCount > 0) {
     let reply_text = "君の今の情報はこんな感じだよ～";
     reply_text += "\n<@" + result.rows[0].user_id + ">";
-    reply_text += "\n最終ログイン日時：" + result.rows[0].last_login;
+    reply_text +=
+      "\n最終ログイン日時：" + format_date(result.rows[0].last_login);
     reply_text += "\n現在のコイン数：" + result.rows[0].coins + "枚";
     reply_text += "\n現在の借金：" + result.rows[0].debts + "枚";
     await interaction.reply(reply_text);
@@ -112,5 +115,5 @@ const error = async (interaction) => {
 
 module.exports = {
   data: command,
-  execute: coins,
+  execute: execute,
 };
