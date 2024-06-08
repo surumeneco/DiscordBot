@@ -91,7 +91,8 @@ const info = async (interaction) => {
   if (result.rowCount > 0) {
     let reply_text = "君の今の情報はこんな感じだよ～";
     reply_text += "\n<@" + result.rows[0].user_id + ">";
-    reply_text += "\n最終ログイン日時：" + result.rows[0].last_login;
+    reply_text +=
+      "\n最終ログイン日時：" + format_date(result.rows[0].last_login);
     reply_text += "\n現在のコイン数：" + result.rows[0].coins + "枚";
     reply_text += "\n現在の借金：" + result.rows[0].debts + "枚";
     await interaction.reply(reply_text);
