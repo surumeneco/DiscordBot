@@ -7,7 +7,7 @@ const {
   GatewayIntentBits,
   PermissionsBitField,
 } = require("discord.js");
-const { high_and_low } = require("../../functions/casino/high_and_low.js");
+const { high_and_low } = require("../functions/casino/high_and_low.js");
 
 const command = new SlashCommandBuilder()
   .setName("casino")

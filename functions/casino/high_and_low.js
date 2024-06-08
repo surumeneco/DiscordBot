@@ -3,6 +3,7 @@ const {
   get_userdata,
   execute_query,
 } = require("../../functions/general/postgre_db.js");
+const { userdata_not_found } = require("../../functions/general/login.js");
 const {
   new_trump_deck,
   shuffle_trumps,
@@ -12,7 +13,7 @@ const high_and_low = async (interaction) => {
   // ログイン済みか確認
   const userdata = await get_userdata(interaction.user.id);
   if (userdata.rowCount <= 0) {
-    no_userdata(interaction);
+    userdata_not_found(interaction);
     return;
   }
 
@@ -36,17 +37,6 @@ const high_and_low = async (interaction) => {
 
   // プレイ開始
   await new_game(interaction, now_coins, bet_coins);
-};
-
-const no_userdata = async (interaction) => {
-  let text = "";
-  text += "\n" + "あれれ？まだログインしてないみたいだけど……";
-  text += "\n" + "ログインしてからもう一度試してね～！";
-  text += "\n" + "/coins control:ログイン";
-  await interaction.reply({
-    content: text,
-    ephemeral: true,
-  });
 };
 
 const not_enough_coins = async (interaction) => {
