@@ -38,7 +38,7 @@ const command = new SlashCommandBuilder()
   .addNumberOption((option) =>
     option
       .setName("num")
-      .setDescription("何位まで表示するか選べるよ")
+      .setDescription("何位まで表示するか選べるよ(1～10)")
       .setRequired(true)
       .setMinValue(1)
       .setMaxValue(10)
