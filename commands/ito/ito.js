@@ -28,7 +28,7 @@ const command = new SlashCommandBuilder()
       .setRequired(false)
   );
 
-const ito_controller = async (interaction) => {
+const execute = async (interaction) => {
   switch (interaction.options.get("control").value) {
     case "start":
       await start(interaction);
@@ -69,5 +69,5 @@ const error = async (interaction) => {
 
 module.exports = {
   data: command,
-  execute: ito_controller,
+  execute: execute,
 };
