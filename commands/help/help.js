@@ -12,7 +12,7 @@ const command = new SlashCommandBuilder()
   .setName("help")
   .setDescription("botについての説明だよ");
 
-const help = async (interaction) => {
+const execute = async (interaction) => {
   let reply_text = "今の機能はこんな感じだよ～";
   reply_text += "\n" + "```";
   reply_text += "\n" + "・/coins：コインを管理できるよ";
@@ -21,13 +21,20 @@ const help = async (interaction) => {
   reply_text += "\n" + "control:情報";
   reply_text += "\n" + "コインの数や借金額を確認できるよ";
   reply_text += "\n" + "control:借金";
-  reply_text += "\n" + "未実装だよ";
+  reply_text += "\n" + "コインを借金できるよ";
+  reply_text += "\n" + "amtで借金する金額を指定してね";
   reply_text += "\n" + "control:返済";
+  reply_text += "\n" + "借金を返済できるよ";
+  reply_text += "\n" + "amtで返済する金額を指定してね";
+  reply_text += "\n" + "```";
+  reply_text += "\n" + "```";
+  reply_text += "\n" + "・/casino：コインを使って遊べるよ";
+  reply_text += "\n" + "game:ハイ&ロー";
+  reply_text += "\n" + "ハイ&ローが遊べるよ";
+  reply_text += "\n" + "game:ブラックジャック";
   reply_text += "\n" + "未実装だよ";
-  reply_text += "\n" + "```";
-  reply_text += "\n" + "```";
-  reply_text += "\n" + "・/casino：未実装";
-  reply_text += "\n" + "今後ポーカーとかブラックジャックとかを作るつもりだよ";
+  reply_text += "\n" + "game:ポーカー";
+  reply_text += "\n" + "未実装だよ";
   reply_text += "\n" + "```";
   reply_text += "\n" + "```";
   reply_text += "\n" + "・/ito：未実装";
@@ -38,5 +45,5 @@ const help = async (interaction) => {
 
 module.exports = {
   data: command,
-  execute: help,
+  execute: execute,
 };
