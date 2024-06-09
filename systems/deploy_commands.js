@@ -1,4 +1,5 @@
 const { REST, Routes } = require("discord.js");
+require("dotenv").config();
 const reader = require("../functions/general/read_directory");
 
 const deploy_commands = async (path, client) => {
