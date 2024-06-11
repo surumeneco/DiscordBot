@@ -34,14 +34,16 @@ const info = async (interaction) => {
       const avr_play_num = game_num > 0 ? play_num / game_num : 0;
       const avr_bet = game_num > 0 ? total_bet / game_num : 0;
       const avr_return = game_num > 0 ? total_return / game_num : 0;
+      const return_rate = total_bet > 0 ? (total_return / total_bet) * 100 : 0;
       reply_text += "\n" + "```";
       reply_text += "\n" + "【ハイアンドロー】";
       reply_text += "\n" + "ゲーム回数：" + game_num + "回";
       reply_text += "\n" + "平均継続回数：" + avr_play_num + "回";
       reply_text += "\n" + "総ベットコイン：" + total_bet + "枚";
-      reply_text += "\n" + "平均ベットコイン：" + avr_bet + "枚";
       reply_text += "\n" + "総回収コイン：" + total_return + "枚";
+      reply_text += "\n" + "平均ベットコイン：" + avr_bet + "枚";
       reply_text += "\n" + "平均回収コイン：" + avr_return + "枚";
+      reply_text += "\n" + "回収率：" + return_rate + "%";
       reply_text += "\n" + "```";
     }
     await interaction.reply(reply_text);
