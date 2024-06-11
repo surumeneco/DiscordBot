@@ -54,6 +54,22 @@ const execute = async (interaction) => {
   const odds = result ? odds_low[old_card.number - 1] : 0;
   const next_coins = Math.round(bet_coins * odds);
 
+  // スコアデータを取得
+  const now_score = await execute_query(
+    "select * from T_HIGHANDLOW_SCORE where user_id = $1",
+    [interaction.user.id]
+  );
+  if (now_score.rowCount <= 0) {
+    console.log("ERROR: Score data not found " + interaction.user.id + ".");
+    return;
+  }
+
+  // スコアデータ更新
+  const play_num = parseFloat(now_score.rows[0].play_num);
+  await execute_query(
+    "update T_HIGHANDLOW_SCORE set game_num = $1 where user_id = $3",
+    [play_num + 1, interaction.user.id]
+  );
   const sequence = result ? (deck.length > 0 ? "win" : "finish") : "lose";
 
   switch (sequence) {
@@ -217,6 +233,23 @@ const lose = async (
   await execute_query("delete from W_HIGHANDLOW where user_id = $1", [
     interaction.user.id,
   ]);
+
+  // スコアデータを取得
+  const now_score = await execute_query(
+    "select * from T_HIGHANDLOW_SCORE where user_id = $1",
+    [interaction.user.id]
+  );
+  if (now_score.rowCount <= 0) {
+    console.log("ERROR: Score data not found " + interaction.user.id + ".");
+    return;
+  }
+  const game_num = parseFloat(now_score.rows[0].game_num);
+
+  // スコアデータ更新
+  await execute_query(
+    "update T_HIGHANDLOW_SCORE set game_num = $1 where user_id = $3",
+    [game_num + 1, interaction.user.id]
+  );
 
   text += "\n" + "残念～。";
   text += "\n" + "また遊んでね。";

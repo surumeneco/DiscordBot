@@ -11,6 +11,10 @@ const {
   get_userdata,
   execute_query,
 } = require("../../../../functions/general/postgre_db.js");
+const {
+  load_deck,
+  new_trump_deck,
+} = require("../../../../functions/casino/trump.js");
 
 const command = new SlashCommandBuilder()
   .setName("btn-casino-hal-stop")
@@ -42,6 +46,33 @@ const execute = async (interaction) => {
     now_coins,
     interaction.user.id,
   ]);
+
+  // スコアデータを取得
+  const now_score = await execute_query(
+    "select * from T_HIGHANDLOW_SCORE where user_id = $1",
+    [interaction.user.id]
+  );
+  if (now_score.rowCount <= 0) {
+    console.log("ERROR: Score data not found " + interaction.user.id + ".");
+    return;
+  }
+  const game_num = parseFloat(now_score.rows[0].game_num);
+  const total_bet = parseFloat(now_score.rows[0].total_bet);
+  const total_return = parseFloat(now_score.rows[0].total_return);
+
+  // スコアデータ更新
+  const deck = load_deck(JSON.parse(now_play_data.rows[0].now_deck));
+  if (deck.length + 1 < new_trump_deck.length) {
+    await execute_query(
+      "update T_HIGHANDLOW_SCORE set game_num = $1, total_return = $2 where user_id = $3",
+      [game_num + 1, total_return + bet_coins, interaction.user.id]
+    );
+  } else {
+    await execute_query(
+      "update T_HIGHANDLOW_SCORE set total_bet = $1 where user_id = $2",
+      [total_bet - bet_coins, interaction.user.id]
+    );
+  }
 
   // プレイデータリフレッシュ
   await execute_query("delete from W_HIGHANDLOW where user_id = $1", [
