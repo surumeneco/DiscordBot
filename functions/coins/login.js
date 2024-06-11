@@ -11,7 +11,6 @@ const login = async (interaction) => {
   let reply_text = "";
   const user = await interaction.guild.members.fetch(interaction.user.id);
   const user_name = user ? user.displayName : null;
-  console.log(user_name);
   let now_coins = 0;
   const result = await get_userdata(interaction.user.id);
   if (result.rowCount > 0) {
