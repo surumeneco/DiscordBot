@@ -17,22 +17,19 @@ const command = new SlashCommandBuilder()
   .addStringOption((option) =>
     option
       .setName("genre")
-      .setDescription("何のランキングを見るか選んでね")
-      .setRequired(false)
+      .setDescription("ランキングのジャンルを選んでね")
+      .setRequired(true)
       .addChoices(
-        { name: "所持コイン数", value: "coins" },
-        { name: "実質コイン数", value: "debts" },
-        { name: "借金コイン数", value: "actual_coins" },
-        { name: "借金回数", value: "debt_num" },
-        { name: "ハイアンドローゲーム回数", value: "highandlow_game_num" },
-        {
-          name: "ハイアンドロー平均連続プレイ回数",
-          value: "highandlow_avr_play_num",
-        },
-        { name: "ハイアンドロー総ベット額", value: "highandlow_total_bet" },
-        { name: "ハイアンドロー総回収額", value: "highandlow_total_return" },
-        { name: "ハイアンドロー回収率", value: "highandlow_return_rate" }
+        { name: "コイン", value: "coins" },
+        { name: "カジノ", value: "casino" }
       )
+  )
+  .addStringOption((option) =>
+    option
+      .setName("type")
+      .setDescription("何のランキングを見るか選んでね")
+      .setRequired(true)
+      .setAutocomplete(true)
   )
   .addStringOption((option) =>
     option
@@ -52,6 +49,38 @@ const command = new SlashCommandBuilder()
       .setMinValue(1)
       .setMaxValue(10)
   );
+
+const autocomplete = async (interaction) => {
+  const genre = interaction.options.getString("genre");
+  let choices = [];
+
+  if (genre === "coins") {
+    choices = [
+      { name: "所持コイン数", value: "coins" },
+      { name: "実質コイン数", value: "debts" },
+      { name: "借金コイン数", value: "actual_coins" },
+      { name: "借金回数", value: "debt_num" },
+    ];
+  } else if (genre === "casino") {
+    choices = [
+      { name: "ゲーム回数", value: "game_num" },
+      {
+        name: "平均連続プレイ回数",
+        value: "avr_play_num",
+      },
+      { name: "総ベット額", value: "total_bet" },
+      { name: "総回収額", value: "total_return" },
+      { name: "回収率", value: "return_rate" },
+    ];
+  }
+
+  const focusedValue = interaction.options.getFocused();
+  const filtered = choices.filter(
+    (choice) => choice.name.startsWith(focusedValue)
+    // choice.value.startsWith(focusedValue) // どっち？
+  );
+  await interaction.respond(filtered);
+};
 
 const execute = async (interaction) => {
   switch (interaction.options.get("type").value) {
@@ -91,5 +120,6 @@ const error = async (interaction) => {
 
 module.exports = {
   data: command,
+  autocomplete: autocomplete,
   execute: execute,
 };
