@@ -103,6 +103,22 @@ const new_game = async (interaction, now_coins, bet_coins) => {
       bet_coins,
     ]
   );
+  const exist_scoredata = await execute_query(
+    "select * from T_HIGHANDLOW_SCORE where user_id = $1",
+    [interaction.user.id]
+  );
+  if (exist_scoredata.rowCount <= 0) {
+    await execute_query(
+      "insert into T_HIGHANDLOW_SCORE (user_id, total_bet) values ($1, $2)",
+      [interaction.user.id, bet_coins]
+    );
+  } else {
+    const total_bet = parseFloat(now_score.rows[0].total_bet);
+    await execute_query(
+      "update T_HIGHANDLOW_SCORE set total_bet = $1 where user_id = $2",
+      [total_bet + bet_coins, interaction.user.id]
+    );
+  }
 
   await game_play(interaction, now_card, bet_coins, now_coins);
 };
