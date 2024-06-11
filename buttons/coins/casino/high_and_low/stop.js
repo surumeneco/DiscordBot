@@ -62,12 +62,16 @@ const execute = async (interaction) => {
 
   // スコアデータ更新
   const deck = load_deck(JSON.parse(now_play_data.rows[0].now_deck));
-  if (deck.length + 1 < new_trump_deck.length) {
+  if (deck.length + 1 < new_trump_deck().length) {
+    console.log("-----------------------------------");
+    console.log("count");
     await execute_query(
       "update T_HIGHANDLOW_SCORE set game_num = $1, total_return = $2 where user_id = $3",
       [game_num + 1, total_return + bet_coins, interaction.user.id]
     );
   } else {
+    console.log("-----------------------------------");
+    console.log("no count");
     await execute_query(
       "update T_HIGHANDLOW_SCORE set total_bet = $1 where user_id = $2",
       [total_bet - bet_coins, interaction.user.id]

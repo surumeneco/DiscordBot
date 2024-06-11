@@ -103,11 +103,11 @@ const new_game = async (interaction, now_coins, bet_coins) => {
       bet_coins,
     ]
   );
-  const exist_scoredata = await execute_query(
+  const now_score = await execute_query(
     "select * from T_HIGHANDLOW_SCORE where user_id = $1",
     [interaction.user.id]
   );
-  if (exist_scoredata.rowCount <= 0) {
+  if (now_score.rowCount <= 0) {
     await execute_query(
       "insert into T_HIGHANDLOW_SCORE (user_id, total_bet) values ($1, $2)",
       [interaction.user.id, bet_coins]
